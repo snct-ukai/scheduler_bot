@@ -1,4 +1,4 @@
-import sys,pymysql.cursors,discord,re,datetime,pytz,time,keys
+import sys,pymysql.cursors,discord,re,datetime,pytz,time,keys,asyncio
 
 client = discord.Client()
 
@@ -12,7 +12,7 @@ async def on_ready():
     while(True):
         t = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
         wt = (24-t.hour+1)*3600 + t.minute*60
-        time.sleep(wt)
+        await asyncio.sleep(wt)
         conn=pymysql.connect(
             user = keys.USER,
             passwd = keys.PW,
