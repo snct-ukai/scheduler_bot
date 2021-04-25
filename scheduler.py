@@ -1,6 +1,7 @@
 import sys,pymysql.cursors,discord,re,calendar,keys #keys.pyにdiscordのtokenとSQLデータベースの情報を保存
 
 flag=0
+ms = ""
 
 conn=pymysql.connect(
     user = keys.USER, #str
@@ -32,6 +33,9 @@ async def on_message(message):
     if message.author.bot:
         return
     global flag
+    global ms
+
+    ms = ""
     if message.content.startswith("s_exit"):
         await message.channel.send("終了します")
         p_exit()
@@ -41,8 +45,22 @@ async def on_message(message):
             await message.channel.send("`yy.mm.dd.予定`の形式で予定を送信してください")
             flag = 1
             return
-        #if message.content.startswith("s_list"):
+        if message.content.startswith("s_list"):
+            select = "select * from schedule where id =" + str(message.channel.id)
+            cursor.execute(select)
+            rows = cursor.fetchall()
 
+            if (len(rows) == 0):
+                await message.channel.send("予定はありません")
+                return
+            
+            for row in rows:
+                s = str(row).strip("(")
+                sche = s.strip(")")
+                schedule = sche.split(",",4)
+                content = schedule[4].split("'",10)
+                ms = ms + str(schedule[1]) + "年" + str(schedule[2]) + "月" + str(schedule[3]) + "日：" + str(content[1]) + "\n"
+            await message.channel.send("```" + ms + "```")
     
     if flag == 1:
         ms_list = message.content.split('.',3)
