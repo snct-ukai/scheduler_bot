@@ -1,4 +1,4 @@
-import sys,pymysql.cursors,discord,re,calendar,keys #keys.pyにdiscordのtokenとSQLデータベースの情報を保存
+import sys,pymysql.cursors,discord,re,calendar,datetime,keys #keys.pyにdiscordのtokenとSQLデータベースの情報を保存
 
 flag=0
 ms = ""
@@ -65,28 +65,23 @@ async def on_message(message):
     if flag == 1:
         ms_list = message.content.split('.',3)
 
-        if ((len(ms_list) != 4) or (int(ms_list[2]) > 12)):
-            await message.channel.send("もう一度入力してください")
-            return
-        if (int(ms_list[2]) == 1 or int(ms_list[2]) == 3 or int(ms_list[2]) == 5 or int(ms_list[2]) == 7 or int(ms_list[2]) == 8 or int(ms_list[2]) == 9 or int(ms_list[2]) == 12) and (int(ms_list[3]) > 31):
-            await message.channel.send("もう一度入力してください")
-            return
-        if (int(ms_list[2]) == 4 or int(ms_list[2]) == 6 or int(ms_list[2]) == 9 or int(ms_list[2]) == 11) and (int(ms_list[3]) > 30):
-            await message.channel.send("もう一度入力してください")
-            return
-        if (calendar.isleap(int(ms_list[1]))):
-            if(int(ms_list[2]) == 2) and (int(ms_list) > 29):
-                await message.channel.send("もう一度入力してください")
-                return
-        if (int(ms_list[2]) == 2) and (int(ms_list) > 28):
-            await message.channel.send("もう一度入力してください")
-            return
-        
-        channel_id = int(message.channel.id)
         year = int("20" + ms_list[0])
         month = int(ms_list[1])
         day = int(ms_list[2])
         content = ms_list[3]
+
+        try:
+            newDataStr="%04d/%02d/%02d"%(year,month,day)
+            datetime.datetime.strptime(newDataStr,"%Y/%m/%d")
+        except ValueError:
+            await message.channel.send("もう一度入力してください")
+            return
+
+        if (len(ms_list) != 4):
+            await message.channel.send("もう一度入力してください")
+            return
+        
+        channel_id = int(message.channel.id)
 
         sql = "INSERT INTO schedule(id,year,month,day,content)VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(sql,(channel_id,year,month,day,content))
