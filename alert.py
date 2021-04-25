@@ -33,7 +33,7 @@ async def on_ready():
             channel = client.get_channel(int(schedule[0]))
             content = schedule[4].split("'",10)
             await channel.send(content[1])
-            d = "delete from schedule where (id =" + str(schedule[0]) + " and year =" + str(schedule[1]) + " and month =" + str(schedule[2]) + " and day =" + str(schedule[3]) + " and content =" + schedule[4] +")"
+            d = "delete from schedule where plan_id =" + str(schedule[5])
             cursor.execute(d)
             conn.commit()
 
