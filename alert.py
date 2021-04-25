@@ -29,7 +29,7 @@ async def on_ready():
         for row in rows:
             s = str(row).strip("(")
             sche = s.strip(")")
-            schedule = sche.split(",",4)
+            schedule = sche.split(",",5)
             channel = client.get_channel(int(schedule[0]))
             content = schedule[4].split("'",10)
             await channel.send(content[1])

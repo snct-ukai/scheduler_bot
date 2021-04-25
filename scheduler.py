@@ -1,7 +1,9 @@
-import sys,pymysql.cursors,discord,re,calendar,datetime,keys #keys.pyにdiscordのtokenとSQLデータベースの情報を保存
+import sys,pymysql.cursors,discord,re,calendar,datetime,pytz,random,keys #keys.pyにdiscordのtokenとSQLデータベースの情報を保存
 
 flag=0
 ms = ""
+p_id = True
+plan_id = 0
 
 conn=pymysql.connect(
     user = keys.USER, #str
@@ -34,6 +36,8 @@ async def on_message(message):
         return
     global flag
     global ms
+    global p_id
+    global plan_id
 
     ms = ""
     if message.content.startswith("s_exit"):
@@ -70,6 +74,18 @@ async def on_message(message):
         day = int(ms_list[2])
         content = ms_list[3]
 
+        planday = datetime.date(year,month,day)
+        now = datetime.date.today()
+
+        if message.content.startswith("s_cancel"):
+            await message.channel.send("予定の追加をキャンセルします")
+            flag = 0
+            return
+
+        if (now > planday):
+            await message.channel.send("もう一度入力してください")
+            return
+
         try:
             newDataStr="%04d/%02d/%02d"%(year,month,day)
             datetime.datetime.strptime(newDataStr,"%Y/%m/%d")
@@ -83,8 +99,24 @@ async def on_message(message):
         
         channel_id = int(message.channel.id)
 
-        sql = "INSERT INTO schedule(id,year,month,day,content)VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql,(channel_id,year,month,day,content))
+        sql = "select plan_id from schedule"
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        p_id = True
+        while (p_id):
+            plan_id = random.randint(100000,999999)
+            p_id = False
+            for row in rows:
+                r = str(row).strip("(")
+                s = r.strip(")")
+                row_id = int(s)
+                if plan_id == row_id:
+                    p_id = True
+                    continue
+
+
+        sql = "INSERT INTO schedule(id,year,month,day,content,plan_id)VALUES (%s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql,(channel_id,year,month,day,content,plan_id))
         conn.commit()
         sort = "select * from schedule order by year,month,day"
         cursor.execute(sort)
