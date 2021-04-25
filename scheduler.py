@@ -65,20 +65,20 @@ async def on_message(message):
     if flag == 1:
         ms_list = message.content.split('.',3)
 
-        if ((len(ms_list) != 4) or (ms_list[2] > 12)):
+        if ((len(ms_list) != 4) or (int(ms_list[2]) > 12)):
             await message.channel.send("もう一度入力してください")
             return
-        if (ms_list[2] == 1 or ms_list[2] == 3 or ms_list[2] == 5 or ms_list[2] == 7 or ms_list[2] == 8 or ms_list[2] == 9 or ms_list[2] == 12) and (ms_list[3] > 31):
+        if (int(ms_list[2]) == 1 or int(ms_list[2]) == 3 or int(ms_list[2]) == 5 or int(ms_list[2]) == 7 or int(ms_list[2]) == 8 or int(ms_list[2]) == 9 or int(ms_list[2]) == 12) and (int(ms_list[3]) > 31):
             await message.channel.send("もう一度入力してください")
             return
-        if (ms_list[2] == 4 or ms_list[2] == 6 or ms_list[2] == 9 or ms_list[2] == 11) and (ms_list[3] > 30):
+        if (int(ms_list[2]) == 4 or int(ms_list[2]) == 6 or int(ms_list[2]) == 9 or int(ms_list[2]) == 11) and (int(ms_list[3]) > 30):
             await message.channel.send("もう一度入力してください")
             return
-        if (calendar.isleap(ms_list[1])):
-            if(ms_list[2] == 2) and (ms_list > 29):
+        if (calendar.isleap(int(ms_list[1]))):
+            if(int(ms_list[2]) == 2) and (int(ms_list) > 29):
                 await message.channel.send("もう一度入力してください")
                 return
-        if (ms_list[2] == 2) and (ms_list > 28):
+        if (int(ms_list[2]) == 2) and (int(ms_list) > 28):
             await message.channel.send("もう一度入力してください")
             return
         
