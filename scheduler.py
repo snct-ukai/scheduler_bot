@@ -161,7 +161,7 @@ async def on_message(message):
         except ValueError:
             await message.channel.send("もう一度入力してください")
             return
-        if (num < 1) or num > len(delete_id):
+        if (num < 0) or num > len(delete_id):
             await message.channel.send("もう一度入力してください")
             return
 
