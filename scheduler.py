@@ -15,6 +15,9 @@ conn=pymysql.connect(
 
 cursor = conn.cursor()
 
+delete = cursor.execute("select id from schedule")
+delete_id = cursor.fetchall()
+
 def p_exit():
     conn.close()
     sys.exit()
@@ -34,10 +37,7 @@ async def on_ready():
 async def on_message(message):
     if message.author.bot:
         return
-    global flag
-    global ms
-    global p_id
-    global plan_id
+    global flag,ms,p_id,plan_id,delete_id,delete
 
     ms = ""
     if message.content.startswith("s_exit"):
@@ -65,6 +65,30 @@ async def on_message(message):
                 content = schedule[4].split("'",10)
                 ms = ms + str(schedule[1]) + "年" + str(schedule[2]) + "月" + str(schedule[3]) + "日：" + str(content[1]) + "\n"
             await message.channel.send("```" + ms + "```")
+
+        if message.content.startswith("s_delete"):
+            select = "select * from schedule where id =" + str(message.channel.id)
+            cursor.execute(select)
+            rows = cursor.fetchall()
+
+            if (len(rows) == 0):
+                await message.channel.send("予定はありません")
+                flag = 0
+                return
+            
+            p = 1
+            delete = cursor.execute("select plan_id from schedule")
+            delete_id = cursor.fetchall()
+            for row in rows:
+                s = str(row).strip("(")
+                sche = s.strip(")")
+                schedule = sche.split(",",4)
+                content = schedule[4].split("'",10)
+                ms = ms + str(p) + ". `" + str(schedule[1]) + "年" + str(schedule[2]) + "月" + str(schedule[3]) + "日：" + str(content[1]) + "\n`"
+                p = p + 1
+            await message.channel.send("消去する予定の数字を入力してください\n" + ms)
+            flag = 2
+            return
     
     if flag == 1:
         ms_list = message.content.split('.',3)
@@ -109,6 +133,7 @@ async def on_message(message):
             for row in rows:
                 r = str(row).strip("(")
                 s = r.strip(")")
+                s = s.strip(",")
                 row_id = int(s)
                 if plan_id == row_id:
                     p_id = True
@@ -122,6 +147,32 @@ async def on_message(message):
         cursor.execute(sort)
         conn.commit()
         await message.channel.send(str(year) + "年" + str(month) + "月" + str(day) + "日" + content + "を追加しました")
+        flag = 0
+        return
+    
+    if flag == 2:
+        if message.content.startswith("s_cancel"):
+            await message.channel.send("キャンセルします")
+            flag = 0
+            return
+
+        try:
+            num = int(message.content) - 1
+        except ValueError:
+            await message.channel.send("もう一度入力してください")
+            return
+        if (num < 1) or num > len(delete_id):
+            await message.channel.send("もう一度入力してください")
+            return
+
+        d = delete_id[num]
+        d = str(d).strip("(")
+        d = d.strip(")")
+        d = d.strip(",")
+        de = "delete from schedule where plan_id = " + str(d)
+        cursor.execute(de)
+        conn.commit()
+        await message.channel.send("削除しました")
         flag = 0
         return
 
