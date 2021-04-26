@@ -143,7 +143,7 @@ async def on_message(message):
         sql = "INSERT INTO schedule(id,year,month,day,content,plan_id)VALUES (%s, %s, %s, %s, %s, %s)"
         cursor.execute(sql,(channel_id,year,month,day,content,plan_id))
         conn.commit()
-        sort = "select * from schedule order by year,month,day"
+        sort = "select * from schedule order by year , month , day"
         cursor.execute(sort)
         conn.commit()
         await message.channel.send(str(year) + "年" + str(month) + "月" + str(day) + "日" + content + "を追加しました")

@@ -11,7 +11,7 @@ async def on_ready():
     
     while(True):
         t = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
-        wt = (24-t.hour+1)*3600 + t.minute*60
+        wt = (24-t.hour+1)*3600 + (60-t.minute+1)*60
         await asyncio.sleep(wt)
         conn=pymysql.connect(
             user = keys.USER,
