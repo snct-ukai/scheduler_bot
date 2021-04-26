@@ -50,7 +50,7 @@ async def on_message(message):
             flag = 1
             return
         if message.content.startswith("s_list"):
-            select = "select * from schedule where id =" + str(message.channel.id)
+            select = "select * from schedule where id =" + str(message.channel.id) + " order by year , month , day"
             cursor.execute(select)
             rows = cursor.fetchall()
 
@@ -67,7 +67,7 @@ async def on_message(message):
             await message.channel.send("```" + ms + "```")
 
         if message.content.startswith("s_delete"):
-            select = "select * from schedule where id =" + str(message.channel.id)
+            select = "select * from schedule where id =" + str(message.channel.id) + " order by year , month , day"
             cursor.execute(select)
             rows = cursor.fetchall()
 
@@ -123,7 +123,7 @@ async def on_message(message):
         
         channel_id = int(message.channel.id)
 
-        sql = "select plan_id from schedule"
+        sql = "select plan_id from schedule order by year , month , day"
         cursor.execute(sql)
         rows = cursor.fetchall()
         p_id = True
